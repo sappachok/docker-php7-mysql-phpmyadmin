@@ -1,0 +1,48 @@
+version: '3'
+services:
+    app:
+        build: ./etc/docker/.
+        container_name: apache-php7
+        restart: always
+        env_file:
+            - .env
+        ports:
+            - 80:80
+        volumes:
+            - ${PHP_WWW_PATH}:/var/www/html
+            #- ./etc/php:/usr/local/etc/php
+            #- ./etc/apache2/apache2.conf:/etc/apache2/conf-enabled/apache2.conf
+            #- ./etc/apache2/hosts.conf:/etc/apache2/sites-enabled/hosts.conf
+        links:
+            - mysqldb
+        depends_on:
+            - mysqldb
+
+    myadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin
+        env_file:
+            - .env
+        ports:
+            - 8888:80
+        environment:
+            - PMA_HOST=${MYSQL_HOST}
+        restart: always
+        links:
+            - mysqldb
+        depends_on:
+            - mysqldb
+
+    mysqldb:
+        image: mysql:5.7.22
+        container_name: ${MYSQL_HOST}
+        restart: always
+        env_file:
+            - .env
+        environment:
+            - MYSQL_USER:${MYSQL_USER}
+            - MYSQL_PASSWORD:${MYSQL_PASSWORD}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        ports:
+            - 3306:3306
+        # volumes:

@@ -1,0 +1,30 @@
+php7:
+  build: .
+  dockerfile: ./etc/docker/dockerfile_php_7
+  container_name: apache-php7
+  env_file:
+    - .env
+  volumes:
+    - ${PHP_WWW_PATH}:/var/www/html
+    #- ./etc/php:/usr/local/etc/php
+    #- ./etc/apache2/apache2.conf:/etc/apache2/conf-enabled/apache2.conf
+    #- ./etc/apache2/hosts.conf:/etc/apache2/sites-enabled/hosts.conf
+  ports:
+    - "80:80"
+    - "8080:8080"
+  links:
+    - mysql
+
+mysql:
+  image: mysql
+  container_name: ${MYSQL_HOST}
+  env_file:
+    - .env
+  ports:
+    - "3306:3306"
+  environment:
+    - MYSQL_USER:${MYSQL_USER}
+    - MYSQL_PASSWORD:${MYSQL_PASSWORD}
+    - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+  #volumes: 
+    #- ./etc/mysql:/docker-entrypoint-initdb.d
